@@ -27,6 +27,149 @@
         <h1>Kael的碎碎念</h1>
         <p>这是我的第一个网站。</p>
     </header>
+<div id="calendar">
+  <h2>日历</h2>
+  <div id="calendar-header">
+    <button id="prev-month">上一月</button>
+    <span id="current-month"></span>
+    <button id="next-month">下一月</button>
+  </div>
+  <table id="calendar-table">
+    <thead>
+      <tr>
+        <th>日</th>
+        <th>一</th>
+        <th>二</th>
+        <th>三</th>
+        <th>四</th>
+        <th>五</th>
+        <th>六</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 动态生成日期 -->
+    </tbody>
+  </table>
+</div>
+<script>
+  // 获取当前日期
+  const today = new Date();
+  let currentYear = today.getFullYear();  // 当前年份
+  let currentMonth = today.getMonth();   // 当前月份（0-11）
+
+  // 获取月份天数和开始日期
+  function generateCalendar(year, month) {
+    const firstDayOfMonth = new Date(year, month, 1); // 获取当前月的第一天
+    const lastDayOfMonth = new Date(year, month + 1, 0); // 获取当前月的最后一天
+    const daysInMonth = lastDayOfMonth.getDate(); // 当前月的天数
+    const firstDayWeekday = firstDayOfMonth.getDay(); // 当前月第一天是星期几
+
+    // 设置当前月份显示
+    document.getElementById('current-month').textContent = `${year}年 ${month + 1}月`;
+
+    // 清空表格内容
+    const tableBody = document.querySelector('#calendar-table tbody');
+    tableBody.innerHTML = '';
+
+    let date = 1;
+    let row = document.createElement('tr');
+
+    // 填充空白（如果当前月1号不是从周日开始）
+    for (let i = 0; i < firstDayWeekday; i++) {
+      const cell = document.createElement('td');
+      row.appendChild(cell);
+    }
+
+    // 填充日期
+    for (let i = firstDayWeekday; i < 7; i++) {
+      const cell = document.createElement('td');
+      cell.textContent = date;
+      if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
+        cell.classList.add('today');  // 高亮显示今天
+      }
+      row.appendChild(cell);
+      date++;
+    }
+    tableBody.appendChild(row);
+
+    // 继续填充剩余的日期
+    while (date <= daysInMonth) {
+      row = document.createElement('tr');
+      for (let i = 0; i < 7; i++) {
+        if (date <= daysInMonth) {
+          const cell = document.createElement('td');
+          cell.textContent = date;
+          if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
+            cell.classList.add('today');  // 高亮显示今天
+          }
+          row.appendChild(cell);
+          date++;
+        } else {
+          row.appendChild(document.createElement('td'));
+        }
+      }
+      tableBody.appendChild(row);
+    }
+  }
+
+  // 切换到上一月
+  document.getElementById('prev-month').addEventListener('click', function() {
+    if (currentMonth === 0) {
+      currentMonth = 11;
+      currentYear--;
+    } else {
+      currentMonth--;
+    }
+    generateCalendar(currentYear, currentMonth);
+  });
+
+  // 切换到下一月
+  document.getElementById('next-month').addEventListener('click', function() {
+    if (currentMonth === 11) {
+      currentMonth = 0;
+      currentYear++;
+    } else {
+      currentMonth++;
+    }
+    generateCalendar(currentYear, currentMonth);
+  });
+
+  // 初始化日历
+  generateCalendar(currentYear, currentMonth);
+</script>
+#calendar {
+  width: 300px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+#calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#calendar-table th,
+#calendar-table td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+#calendar-table th {
+  background-color: #f2f2f2;
+}
+
+.today {
+  background-color: #ffcc00;
+  font-weight: bold;
+}
 
     <section>
         <h2>关于我们</h2>
