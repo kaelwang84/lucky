@@ -1,95 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的第一个网站</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* 样式设置 */
     body {
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
       background-color: #f4f4f4;
     }
 
-    nav {
-      background-color: #2c3e50;
+    header {
+      background-color: #4CAF50;
       color: white;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-    }
-
-    nav ul li {
-      margin-right: 20px;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: white;
-      font-size: 16px;
-    }
-
-    nav .search-bar input {
-      padding: 5px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .content {
-      padding: 20px;
-    }
-
-    .card {
-      background-color: white;
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    table {
-      margin-top: 20px;
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    table, th, td {
-      border: 1px solid black;
-    }
-
-    th, td {
       padding: 10px;
       text-align: center;
     }
 
-    @media (max-width: 768px) {
-      nav {
-        flex-direction: column;
-        text-align: center;
-      }
+    nav {
+      background-color: #333;
+      overflow: hidden;
+    }
 
-      nav ul {
-        flex-direction: column;
-        margin-top: 10px;
-      }
+    nav a {
+      float: left;
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
 
-      nav ul li {
-        margin-right: 0;
-        margin-bottom: 10px;
-      }
+    nav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    /* 备忘录部分 */
+    #memo {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #memo-text {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    #saved-memo {
+      margin-top: 10px;
+    }
+
+    /* 样式：Excel 数据表格 */
+    #sheet-data table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #sheet-data th, #sheet-data td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    #calendar {
+      width: 100%;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    /* 页脚样式 */
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    #weather {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -97,234 +103,108 @@
 
   <!-- 导航栏 -->
   <nav>
-    <div class="logo">
-      <h1>Kael的碎碎念</h1>
-    </div>
-    <ul>
-      <li><a href="#" onclick="showHomePage()">主页</a></li>
-      <li><a href="#" onclick="showMemo()">备忘录</a></li>
-      <li><a href="#" onclick="showCalendar()">日历</a></li>
-      <li><a href="#">链接1</a></li>
-      <li><a href="#">链接2</a></li>
-      <li><a href="#">链接3</a></li>
-    </ul>
-    <div class="search-bar">
-      <input type="text" id="search-bar" placeholder="搜索..." oninput="searchContent()">
-    </div>
+    <a href="#home">主页</a>
+    <a href="#memo">备忘录</a>
+    <a href="#link1">链接1</a>
+    <a href="#link2">链接2</a>
+    <a href="#link3">链接3</a>
+    <input type="text" id="search" placeholder="搜索...">
   </nav>
 
   <!-- 主页内容 -->
-  <div class="content" id="home">
-    <div class="card">
-      <h2 id="home-title">欢迎来到Kael的主页</h2>
-      <p id="home-description">这里是我的第一个网站，您可以在导航栏上找到更多内容。</p>
-    </div>
+  <header>
+    <h1>Kael的日历和备忘录</h1>
+    <p>这是我的第一个网站。</p>
+  </header>
+
+  <!-- 天气显示 -->
+  <div id="weather">
+    <h2>当前天气</h2>
+    <p id="weather-info">加载中...</p>
   </div>
 
   <!-- 备忘录内容 -->
-  <div class="content" id="memo" style="display: none;">
+  <div id="memo">
     <h2>备忘录</h2>
     <textarea id="memo-text" placeholder="在这里输入你的备忘录..."></textarea>
     <button id="save-memo">保存备忘录</button>
     <p id="saved-memo"></p>
   </div>
 
-  <!-- 日历内容 -->
-  <div class="content" id="calendar" style="display: none;">
-    <h2>日历</h2>
-    <div id="calendar-header">
-      <button id="prev-month">上一月</button>
-      <span id="current-month"></span>
-      <button id="next-month">下一月</button>
-    </div>
-    <table id="calendar-table">
-      <thead>
-        <tr>
-          <th>日</th>
-          <th>一</th>
-          <th>二</th>
-          <th>三</th>
-          <th>四</th>
-          <th>五</th>
-          <th>六</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 动态生成日期 -->
-      </tbody>
-    </table>
+  <!-- 从Google Sheets获取的数据展示 -->
+  <div id="sheet-data">
+    <h2>从Google Sheets获取的数据</h2>
+    <!-- 数据表格将在这里生成 -->
   </div>
 
-  <!-- Excel 数据展示 -->
-  <div class="content" id="excel-data">
-    <h2>表格数据</h2>
-    <!-- 数据会从 Google Sheets API 获取并渲染到这里 -->
-  </div>
-
-  <script>
-    // Google Sheets API URL
-    const sheetUrl = 'https://script.google.com/macros/s/AKfycbxeOWZsx6N9F1oLSTgb0Ft5JWAdG5gyNCXWxQfbWnMqZ1Gsg27jYnZMzTxD2fBGjeInug/exec';
-
-    function updateExcelData() {
-      fetch(sheetUrl)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('excel-data').innerHTML = '';
-          const table = document.createElement('table');
-          table.style.width = '100%';
-          table.style.borderCollapse = 'collapse';
-
-          const headerRow = document.createElement('tr');
-          const headers = ['日期', '星期', '节假日', '倒数日', '办理事项1', '办理事项2', '办理事项3', '办理事项4', '办理事项5'];
-          headers.forEach(header => {
-            const th = document.createElement('th');
-            th.textContent = header;
-            th.style.border = '1px solid #ddd';
-            th.style.padding = '8px';
-            headerRow.appendChild(th);
-          });
-          table.appendChild(headerRow);
-
-          data.forEach(row => {
-            const tr = document.createElement('tr');
-            Object.values(row).forEach(value => {
-              const td = document.createElement('td');
-              td.textContent = value || ''; 
-              td.style.border = '1px solid #ddd';
-              td.style.padding = '8px';
-              tr.appendChild(td);
-            });
-            table.appendChild(tr);
-          });
-
-          document.getElementById('excel-data').appendChild(table);
-        })
-        .catch(error => {
-          console.error('获取数据失败:', error);
-          document.getElementById('excel-data').textContent = '无法获取表格数据。';
-        });
-    }
-
-    // 主页、备忘录、日历页面显示切换
-    function showHomePage() {
-      document.getElementById('home').style.display = 'block';
-      document.getElementById('memo').style.display = 'none';
-      document.getElementById('calendar').style.display = 'none';
-      document.getElementById('excel-data').style.display = 'none';
-    }
-
-    function showMemo() {
-      document.getElementById('home').style.display = 'none';
-      document.getElementById('memo').style.display = 'block';
-      document.getElementById('calendar').style.display = 'none';
-      document.getElementById('excel-data').style.display = 'none';
-    }
-
-    function showCalendar() {
-      document.getElementById('home').style.display = 'none';
-      document.getElementById('memo').style.display = 'none';
-      document.getElementById('calendar').style.display = 'block';
-      document.getElementById('excel-data').style.display = 'none';
-    }
-
-    // 初始化页面
-    showHomePage();
-
-    // 获取当前日期并显示日历
-    const today = new Date();
-    let currentYear = today.getFullYear();
-    let currentMonth = today.getMonth();
-
-    function generateCalendar(year, month) {
-      const firstDayOfMonth = new Date(year, month, 1);
-      const lastDayOfMonth = new Date(year, month + 1, 0);
-      const daysInMonth = lastDayOfMonth.getDate();
-      const firstDayWeekday = firstDayOfMonth.getDay();
-
-      document.getElementById('current-month').textContent = `${year}年 ${month + 1}月`;
-
-      const tableBody = document.querySelector('#calendar-table tbody');
-      tableBody.innerHTML = '';
-
-      let date = 1;
-      let row = document.createElement('tr');
-
-      for (let i = 0; i < firstDayWeekday; i++) {
-        const cell = document.createElement('td');
-        row.appendChild(cell);
-      }
-
-      for (let i = firstDayWeekday; i < 7; i++) {
-        const cell = document.createElement('td');
-        cell.textContent = date;
-        if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
-          cell.classList.add('today');
-        }
-        row.appendChild(cell);
-        date++;
-      }
-      tableBody.appendChild(row);
-
-      while (date <= daysInMonth) {
-        row = document.createElement('tr');
-        for (let i = 0; i < 7; i++) {
-          if (date <= daysInMonth) {
-            const cell = document.createElement('td');
-            cell.textContent = date;
-            if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
-              cell.classList.add('today');
-            }
-            row.appendChild(cell);
-            date++;
-          } else {
-            row.appendChild(document.createElement('td'));
-          }
-        }
-        tableBody.appendChild(row);
-      }
-    }
-
-    document.getElementById('prev-month').addEventListener('click', function() {
-      if (currentMonth === 0) {
-        currentMonth = 11;
-        currentYear--;
-      } else {
-        currentMonth--;
-      }
-      generateCalendar(currentYear, currentMonth);
-    });
-
-    document.getElementById('next-month').addEventListener('click', function() {
-      if (currentMonth === 11) {
-        currentMonth = 0;
-        currentYear++;
-      } else {
-        currentMonth++;
-      }
-      generateCalendar(currentYear, currentMonth);
-    });
-
-    generateCalendar(currentYear, currentMonth);
-
-    // 搜索内容
-    function searchContent() {
-      const searchQuery = document.getElementById('search-bar').value.toLowerCase();
-      
-      const contentSections = document.querySelectorAll('.content');
-      contentSections.forEach(section => {
-        const contentText = section.textContent.toLowerCase();
-        if (contentText.includes(searchQuery)) {
-          section.style.display = 'block';
-        } else {
-          section.style.display = 'none';
-        }
-      });
-    }
-
-  </script>
-
+  <!-- 页脚 -->
   <footer>
     <p>© 2024 我的第一个网站</p>
   </footer>
+
+  <script>
+    // 获取天气数据
+    fetch('https://api.openweathermap.org/data/2.5/weather?q=London&appid=e3091a95376e89f9b0421bfdbddfc6ba&units=metric')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('weather-info').textContent = `天气：${data.weather[0].description}, 温度：${data.main.temp}°C`;
+      })
+      .catch(error => {
+        document.getElementById('weather-info').textContent = '获取天气数据失败';
+      });
+
+    // 备忘录保存功能
+    const savedMemo = localStorage.getItem('memo');
+    if (savedMemo) {
+      document.getElementById('saved-memo').textContent = '已保存的备忘录：' + savedMemo;
+    }
+
+    document.getElementById('save-memo').addEventListener('click', function() {
+      const memoText = document.getElementById('memo-text').value;
+      localStorage.setItem('memo', memoText);
+      document.getElementById('saved-memo').textContent = '已保存的备忘录：' + memoText;
+    });
+
+    // 获取Google Sheets数据并显示
+    fetch('https://script.google.com/macros/s/AKfycbxeOWZsx6N9F1oLSTgb0Ft5JWAdG5gyNCXWxQfbWnMqZ1Gsg27jYnZMzTxD2fBGjeInug/exec')
+      .then(response => response.json())
+      .then(data => {
+        const table = document.createElement('table');
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
+
+        // 创建表头
+        const headerRow = document.createElement('tr');
+        const headers = ['日期', '星期', '节假日', '倒数日', '办理事项1', '办理事项2', '办理事项3', '办理事项4', '办理事项5'];
+        headers.forEach(header => {
+          const th = document.createElement('th');
+          th.textContent = header;
+          th.style.border = '1px solid #ddd';
+          th.style.padding = '8px';
+          headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+
+        // 填充表格内容
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          Object.values(row).forEach(value => {
+            const td = document.createElement('td');
+            td.textContent = value;
+            td.style.border = '1px solid #ddd';
+            td.style.padding = '8px';
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+
+        // 将表格添加到页面
+        document.getElementById('sheet-data').appendChild(table);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+
+  </script>
 </body>
 </html>
