@@ -239,6 +239,44 @@
       document.body.appendChild(fileInput); // 将文件选择框添加到页面上
     });
   </script>
+<script>
+  fetch('https://script.google.com/macros/s/AKfycbxeOWZsx6N9F1oLSTgb0Ft5JWAdG5gyNCXWxQfbWnMqZ1Gsg27jYnZMzTxD2fBGjeInug/exec')
+    .then(response => response.json())
+    .then(data => {
+      const table = document.createElement('table');
+      table.style.width = '100%';
+      table.style.borderCollapse = 'collapse';
+      
+      const headerRow = document.createElement('tr');
+      // 假设你知道字段的名称
+      const headers = ['日期', '星期', '节假日', '倒数日', '办理事项1', '办理事项2', '办理事项3', '办理事项4', '办理事项5'];
+      headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        th.style.border = '1px solid #ddd';
+        th.style.padding = '8px';
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        Object.values(row).forEach(value => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          td.style.border = '1px solid #ddd';
+          td.style.padding = '8px';
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+
+      document.getElementById('excel-data').appendChild(table);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+</script>
 
   <footer>
     <p>© 2024 我的第一个网站</p>
