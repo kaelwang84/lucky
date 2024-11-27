@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的第一个网站</title>
   <style>
-    /* 样式设置 */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -40,7 +39,19 @@
       color: black;
     }
 
-    /* 备忘录部分 */
+    #search {
+      float: right;
+      padding: 6px;
+      margin-top: 10px;
+      border-radius: 4px;
+      border: none;
+    }
+
+    #search:focus {
+      outline: none;
+    }
+
+    /* 样式：备忘录 */
     #memo {
       margin-top: 20px;
       padding: 20px;
@@ -58,11 +69,14 @@
       border-radius: 4px;
     }
 
-    #saved-memo {
-      margin-top: 10px;
+    /* 样式：日历 */
+    #calendar {
+      width: 100%;
+      text-align: center;
+      margin-top: 20px;
     }
 
-    /* 样式：Excel 数据表格 */
+    /* 样式：表格 */
     #sheet-data table {
       width: 100%;
       border-collapse: collapse;
@@ -74,13 +88,11 @@
       border: 1px solid #ddd;
     }
 
-    #calendar {
-      width: 100%;
-      text-align: center;
-      margin-top: 20px;
+    .today {
+      background-color: #ffcc00;
+      font-weight: bold;
     }
 
-    /* 页脚样式 */
     footer {
       background-color: #333;
       color: white;
@@ -90,13 +102,6 @@
       bottom: 0;
       width: 100%;
     }
-
-    #weather {
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
   </style>
 </head>
 <body>
@@ -105,9 +110,8 @@
   <nav>
     <a href="#home">主页</a>
     <a href="#memo">备忘录</a>
-    <a href="#link1">链接1</a>
-    <a href="#link2">链接2</a>
-    <a href="#link3">链接3</a>
+    <a href="#link1">日历</a>
+    <a href="#link2">Google Sheets 数据</a>
     <input type="text" id="search" placeholder="搜索...">
   </nav>
 
@@ -131,10 +135,36 @@
     <p id="saved-memo"></p>
   </div>
 
-  <!-- 从Google Sheets获取的数据展示 -->
+  <!-- Google Sheets 数据展示 -->
   <div id="sheet-data">
     <h2>从Google Sheets获取的数据</h2>
     <!-- 数据表格将在这里生成 -->
+  </div>
+
+  <!-- 日历显示 -->
+  <div id="calendar">
+    <h2>日历</h2>
+    <div id="calendar-header">
+      <button id="prev-month">上一月</button>
+      <span id="current-month"></span>
+      <button id="next-month">下一月</button>
+    </div>
+    <table id="calendar-table">
+      <thead>
+        <tr>
+          <th>日</th>
+          <th>一</th>
+          <th>二</th>
+          <th>三</th>
+          <th>四</th>
+          <th>五</th>
+          <th>六</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 动态生成日期 -->
+      </tbody>
+    </table>
   </div>
 
   <!-- 页脚 -->
@@ -205,6 +235,81 @@
         console.error('Error:', error);
       });
 
+    // 日历功能
+    const today = new Date();
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth();
+
+    function generateCalendar(year, month) {
+      const firstDayOfMonth = new Date(year, month, 1);
+      const lastDayOfMonth = new Date(year, month + 1, 0);
+      const daysInMonth = lastDayOfMonth.getDate();
+      const firstDayWeekday = firstDayOfMonth.getDay();
+
+      document.getElementById('current-month').textContent = `${year}年 ${month + 1}月`;
+
+      const tableBody = document.querySelector('#calendar-table tbody');
+      tableBody.innerHTML = '';
+
+      let date = 1;
+      let row = document.createElement('tr');
+
+      for (let i = 0; i < firstDayWeekday; i++) {
+        const cell = document.createElement('td');
+        row.appendChild(cell);
+      }
+
+      for (let i = firstDayWeekday; i < 7; i++) {
+        const cell = document.createElement('td');
+        cell.textContent = date;
+        if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
+          cell.classList.add('today');
+        }
+        row.appendChild(cell);
+        date++;
+      }
+      tableBody.appendChild(row);
+
+      while (date <= daysInMonth) {
+        row = document.createElement('tr');
+        for (let i = 0; i < 7; i++) {
+          if (date <= daysInMonth) {
+            const cell = document.createElement('td');
+            cell.textContent = date;
+            if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
+              cell.classList.add('today');
+            }
+            row.appendChild(cell);
+            date++;
+          } else {
+            row.appendChild(document.createElement('td'));
+          }
+        }
+        tableBody.appendChild(row);
+      }
+    }
+
+    document.getElementById('prev-month').addEventListener('click', function() {
+      if (currentMonth === 0) {
+        currentMonth = 11;
+        currentYear--;
+      } else {
+        currentMonth--;
+      }
+      generateCalendar(currentYear, currentMonth);
+    });
+
+    document.getElementById('next-month').addEventListener('click', function() {
+      if (currentMonth === 11) {
+        currentMonth = 0;
+        currentYear++;
+      } else {
+        currentMonth++;
+      }
+      generateCalendar(currentYear, currentMonth);
+    });
+
+    generateCalendar(currentYear, currentMonth);
   </script>
 </body>
 </html>
