@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的第一个网站</title>
-  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
   <style>
     /* 样式重置 */
     * {
@@ -65,17 +65,10 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    /* 日历样式 */
-    #calendar {
-      margin: 0 auto;
-      width: 80%;
-      text-align: center;
-    }
-
     /* 表格样式 */
     table {
-      width: 100%;
       margin-top: 20px;
+      width: 100%;
       border-collapse: collapse;
     }
 
@@ -86,10 +79,6 @@
     th, td {
       padding: 10px;
       text-align: center;
-    }
-
-    th {
-      background-color: #f2f2f2;
     }
 
     /* 响应式布局 */
@@ -108,10 +97,6 @@
         margin-right: 0;
         margin-bottom: 10px;
       }
-
-      #calendar {
-        width: 100%;
-      }
     }
   </style>
 </head>
@@ -123,8 +108,9 @@
       <h1>Kael的碎碎念</h1>
     </div>
     <ul>
-      <li><a href="#">主页</a></li>
-      <li><a href="#">备忘录</a></li>
+      <li><a href="#" onclick="showHomePage()">主页</a></li>
+      <li><a href="#" onclick="showMemo()">备忘录</a></li>
+      <li><a href="#" onclick="showCalendar()">日历</a></li>
       <li><a href="#">链接1</a></li>
       <li><a href="#">链接2</a></li>
       <li><a href="#">链接3</a></li>
@@ -134,59 +120,55 @@
     </div>
   </nav>
 
-  <div class="content">
-    <!-- 页面主内容 -->
+  <!-- 主页内容 -->
+  <div class="content" id="home">
     <div class="card">
-      <h2>当前天气</h2>
-      <p id="weather-info">加载中...</p>
-    </div>
-
-    <div class="card">
-      <h2>日历</h2>
-      <div id="calendar">
-        <h3 id="current-month"></h3>
-        <div id="calendar-header">
-          <button id="prev-month">上一月</button>
-          <span id="current-month">2024年11月</span>
-          <button id="next-month">下一月</button>
-        </div>
-        <table id="calendar-table">
-          <thead>
-            <tr>
-              <th>日</th>
-              <th>一</th>
-              <th>二</th>
-              <th>三</th>
-              <th>四</th>
-              <th>五</th>
-              <th>六</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- 动态生成日期 -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 从 Google Sheets 获取数据展示 -->
-    <div class="card" id="excel-data">
-      <h2>表格数据</h2>
-      <!-- 数据会从 Google Sheets API 获取并渲染到这里 -->
+      <h2>欢迎来到Kael的主页</h2>
+      <p>这里是我的第一个网站，您可以在导航栏上找到更多内容。</p>
     </div>
   </div>
 
-  <script>
-    // 获取天气数据
-    fetch('https://api.openweathermap.org/data/2.5/weather?q=London&appid=e3091a95376e89f9b0421bfdbddfc6ba&units=metric')
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('weather-info').textContent = `天气：${data.weather[0].description}, 温度：${data.main.temp}°C`;
-      })
-      .catch(error => {
-        document.getElementById('weather-info').textContent = '获取天气数据失败';
-      });
+  <!-- 备忘录内容 -->
+  <div class="content" id="memo" style="display: none;">
+    <h2>备忘录</h2>
+    <textarea id="memo-text" placeholder="在这里输入你的备忘录..."></textarea>
+    <button id="save-memo">保存备忘录</button>
+    <p id="saved-memo"></p>
+  </div>
 
+  <!-- 日历内容 -->
+  <div class="content" id="calendar" style="display: none;">
+    <h2>日历</h2>
+    <div id="calendar-header">
+      <button id="prev-month">上一月</button>
+      <span id="current-month"></span>
+      <button id="next-month">下一月</button>
+    </div>
+    <table id="calendar-table">
+      <thead>
+        <tr>
+          <th>日</th>
+          <th>一</th>
+          <th>二</th>
+          <th>三</th>
+          <th>四</th>
+          <th>五</th>
+          <th>六</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 动态生成日期 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Excel 数据展示 -->
+  <div class="content" id="excel-data">
+    <h2>表格数据</h2>
+    <!-- 数据会从 Google Sheets API 获取并渲染到这里 -->
+  </div>
+
+  <script>
     // Google Sheets API
     const sheetUrl = 'https://script.google.com/macros/s/AKfycbxeOWZsx6N9F1oLSTgb0Ft5JWAdG5gyNCXWxQfbWnMqZ1Gsg27jYnZMzTxD2fBGjeInug/exec';
 
@@ -230,10 +212,32 @@
         });
     }
 
-    updateExcelData(); // 初始化时加载数据
-    setInterval(updateExcelData, 300000);  // 每5分钟刷新一次数据
+    // 主页、备忘录、日历页面显示切换
+    function showHomePage() {
+      document.getElementById('home').style.display = 'block';
+      document.getElementById('memo').style.display = 'none';
+      document.getElementById('calendar').style.display = 'none';
+      document.getElementById('excel-data').style.display = 'none';
+    }
 
-    // 日历生成函数
+    function showMemo() {
+      document.getElementById('home').style.display = 'none';
+      document.getElementById('memo').style.display = 'block';
+      document.getElementById('calendar').style.display = 'none';
+      document.getElementById('excel-data').style.display = 'none';
+    }
+
+    function showCalendar() {
+      document.getElementById('home').style.display = 'none';
+      document.getElementById('memo').style.display = 'none';
+      document.getElementById('calendar').style.display = 'block';
+      document.getElementById('excel-data').style.display = 'none';
+    }
+
+    // 初始化页面
+    showHomePage();
+
+    // 获取当前日期并显示日历
     const today = new Date();
     let currentYear = today.getFullYear();
     let currentMonth = today.getMonth();
@@ -308,10 +312,12 @@
     });
 
     generateCalendar(currentYear, currentMonth);
+    updateExcelData();
   </script>
 
   <footer>
     <p>© 2024 我的第一个网站</p>
   </footer>
+
 </body>
 </html>
