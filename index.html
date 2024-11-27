@@ -1,241 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的第一个网站</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    #calendar {
+      width: 300px;
+      margin: 0 auto;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的第一个网站</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        /* 将CSS放在这里 */
-        #calendar {
-            width: 300px;
-            margin: 0 auto;
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
+    #calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        #calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    #calendar-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
-        #calendar-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    #calendar-table th,
+    #calendar-table td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
 
-        #calendar-table th,
-        #calendar-table td {
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
+    #calendar-table th {
+      background-color: #f2f2f2;
+    }
 
-        #calendar-table th {
-            background-color: #f2f2f2;
-        }
+    .today {
+      background-color: #ffcc00;
+      font-weight: bold;
+    }
 
-        .today {
-            background-color: #ffcc00;
-            font-weight: bold;
-        }
-    </style>
+    table {
+      margin-top: 20px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <div id="weather">
-        <h2>当前天气</h2>
-        <p id="weather-info">加载中...</p>
+  <div id="weather">
+    <h2>当前天气</h2>
+    <p id="weather-info">加载中...</p>
+  </div>
+
+  <script>
+    // 获取天气数据
+    fetch('https://api.openweathermap.org/data/2.5/weather?q=London&appid=e3091a95376e89f9b0421bfdbddfc6ba&units=metric')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('weather-info').textContent = `天气：${data.weather[0].description}, 温度：${data.main.temp}°C`;
+      })
+      .catch(error => {
+        document.getElementById('weather-info').textContent = '获取天气数据失败';
+      });
+  </script>
+
+  <header>
+    <h1>Kael的碎碎念</h1>
+    <p>这是我的第一个网站。</p>
+  </header>
+
+  <div id="calendar">
+    <h2>日历</h2>
+    <div id="calendar-header">
+      <button id="prev-month">上一月</button>
+      <span id="current-month"></span>
+      <button id="next-month">下一月</button>
     </div>
+    <table id="calendar-table">
+      <thead>
+        <tr>
+          <th>日</th>
+          <th>一</th>
+          <th>二</th>
+          <th>三</th>
+          <th>四</th>
+          <th>五</th>
+          <th>六</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 动态生成日期 -->
+      </tbody>
+    </table>
+  </div>
 
-    <script>
-        fetch('https://api.openweathermap.org/data/2.5/weather?q=London&appid=e3091a95376e89f9b0421bfdbddfc6ba&units=metric')
-            .then(response => response.json()) // 获取响应并转化为 JSON 格式
-            .then(data => {
-                document.getElementById('weather-info').textContent = `天气：${data.weather[0].description}, 温度：${data.main.temp}°C`; // 更新天气信息
-            })
-            .catch(error => {
-                document.getElementById('weather-info').textContent = '获取天气数据失败'; // 错误处理，获取天气数据失败时显示错误信息
-            });
-    </script>
+  <div id="excel-data"></div>
 
-    <header>
-        <h1>Kael的碎碎念</h1>
-        <p>这是我的第一个网站。</p>
-    </header>
+  <script>
+    const today = new Date();
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth();
 
-    <div id="calendar">
-        <h2>日历</h2>
-        <div id="calendar-header">
-            <button id="prev-month">上一月</button>
-            <span id="current-month"></span>
-            <button id="next-month">下一月</button>
-        </div>
-        <table id="calendar-table">
-            <thead>
-                <tr>
-                    <th>日</th>
-                    <th>一</th>
-                    <th>二</th>
-                    <th>三</th>
-                    <th>四</th>
-                    <th>五</th>
-                    <th>六</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- 动态生成日期 -->
-            </tbody>
-        </table>
-    </div>
-    
-    <script>
-        const today = new Date();
-        let currentYear = today.getFullYear();  // 当前年份
-        let currentMonth = today.getMonth();   // 当前月份（0-11）
+    function generateCalendar(year, month) {
+      const firstDayOfMonth = new Date(year, month, 1);
+      const lastDayOfMonth = new Date(year, month + 1, 0);
+      const daysInMonth = lastDayOfMonth.getDate();
+      const firstDayWeekday = firstDayOfMonth.getDay();
 
-        function generateCalendar(year, month) {
-            const firstDayOfMonth = new Date(year, month, 1);
-            const lastDayOfMonth = new Date(year, month + 1, 0);
-            const daysInMonth = lastDayOfMonth.getDate();
-            const firstDayWeekday = firstDayOfMonth.getDay();
+      document.getElementById('current-month').textContent = `${year}年 ${month + 1}月`;
 
-            document.getElementById('current-month').textContent = `${year}年 ${month + 1}月`;
+      const tableBody = document.querySelector('#calendar-table tbody');
+      tableBody.innerHTML = '';
 
-            const tableBody = document.querySelector('#calendar-table tbody');
-            tableBody.innerHTML = '';
+      let date = 1;
+      let row = document.createElement('tr');
 
-            let date = 1;
-            let row = document.createElement('tr');
+      for (let i = 0; i < firstDayWeekday; i++) {
+        const cell = document.createElement('td');
+        row.appendChild(cell);
+      }
 
-            for (let i = 0; i < firstDayWeekday; i++) {
-                const cell = document.createElement('td');
-                row.appendChild(cell);
-            }
-
-            for (let i = firstDayWeekday; i < 7; i++) {
-                const cell = document.createElement('td');
-                cell.textContent = date;
-                if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
-                    cell.classList.add('today');
-                }
-                row.appendChild(cell);
-                date++;
-            }
-            tableBody.appendChild(row);
-
-            while (date <= daysInMonth) {
-                row = document.createElement('tr');
-                for (let i = 0; i < 7; i++) {
-                    if (date <= daysInMonth) {
-                        const cell = document.createElement('td');
-                        cell.textContent = date;
-                        if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
-                            cell.classList.add('today');
-                        }
-                        row.appendChild(cell);
-                        date++;
-                    } else {
-                        row.appendChild(document.createElement('td'));
-                    }
-                }
-                tableBody.appendChild(row);
-            }
+      for (let i = firstDayWeekday; i < 7; i++) {
+        const cell = document.createElement('td');
+        cell.textContent = date;
+        if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
+          cell.classList.add('today');
         }
+        row.appendChild(cell);
+        date++;
+      }
+      tableBody.appendChild(row);
 
-        document.getElementById('prev-month').addEventListener('click', function() {
-            if (currentMonth === 0) {
-                currentMonth = 11;
-                currentYear--;
-            } else {
-                currentMonth--;
+      while (date <= daysInMonth) {
+        row = document.createElement('tr');
+        for (let i = 0; i < 7; i++) {
+          if (date <= daysInMonth) {
+            const cell = document.createElement('td');
+            cell.textContent = date;
+            if (date === today.getDate() && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
+              cell.classList.add('today');
             }
-            generateCalendar(currentYear, currentMonth);
-        });
-
-        document.getElementById('next-month').addEventListener('click', function() {
-            if (currentMonth === 11) {
-                currentMonth = 0;
-                currentYear++;
-            } else {
-                currentMonth++;
-            }
-            generateCalendar(currentYear, currentMonth);
-        });
-
-        generateCalendar(currentYear, currentMonth);
-    </script>
-
-    
-<div id="memo">
-    <h2>备忘录</h2>
-    <textarea id="memo-text" placeholder="在这里输入你的备忘录..."></textarea>
-    <button id="save-memo">保存备忘录</button>
-    <p id="saved-memo"></p>
-</div>
-
-<script>
-  // 获取已保存的备忘录
-  const savedMemo = localStorage.getItem('memo');
-  if (savedMemo) {
-    document.getElementById('saved-memo').textContent = '已保存的备忘录：' + savedMemo;
-  }
-
-  // 保存备忘录
-  document.getElementById('save-memo').addEventListener('click', function() {
-    const memoText = document.getElementById('memo-text').value;
-    localStorage.setItem('memo', memoText);
-    document.getElementById('saved-memo').textContent = '已保存的备忘录：' + memoText;
-  });
-</script>
-<div id="expense-tracker">
-    <h2>记账</h2>
-    <input type="text" id="expense-description" placeholder="描述（如：午餐）">
-    <input type="number" id="expense-amount" placeholder="金额">
-    <button id="save-expense">保存支出</button>
-    <ul id="expense-list"></ul>
-</div>
-<div id="excel-data"></div>
-node index.js
-
-<script>
-  // 从本地存储获取已保存的支出记录
-  const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
-  const expenseList = document.getElementById('expense-list');
-  expenses.forEach(expense => {
-    const li = document.createElement('li');
-    li.textContent = `${expense.description}: ¥${expense.amount}`;
-    expenseList.appendChild(li);
-  });
-
-  // 保存支出记录
-  document.getElementById('save-expense').addEventListener('click', function() {
-    const description = document.getElementById('expense-description').value;
-    const amount = document.getElementById('expense-amount').value;
-    
-    if (description && amount) {
-      const expense = { description, amount };
-      expenses.push(expense);
-      localStorage.setItem('expenses', JSON.stringify(expenses));
-
-      // 更新支出列表
-      const li = document.createElement('li');
-      li.textContent = `${description}: ¥${amount}`;
-      expenseList.appendChild(li);
-
-      // 清空输入框
-      document.getElementById('expense-description').value = '';
-      document.getElementById('expense-amount').value = '';
+            row.appendChild(cell);
+            date++;
+          } else {
+            row.appendChild(document.createElement('td'));
+          }
+        }
+        tableBody.appendChild(row);
+      }
     }
-  });
-</script>
- <section>
-        <h2>关于我们</h2>
-        <p>我们是一个小型团队，专注于提供简单的网页设计。</p>
-    </section>
-    <footer>
-        <p>© 2024 我的第一个网站</p>
-    </footer>
+
+    document.getElementById('prev-month').addEventListener('click', function() {
+      if (currentMonth === 0) {
+        currentMonth = 11;
+        currentYear--;
+      } else {
+        currentMonth--;
+      }
+      generateCalendar(currentYear, currentMonth);
+    });
+
+    document.getElementById('next-month').addEventListener('click', function() {
+      if (currentMonth === 11) {
+        currentMonth = 0;
+        currentYear++;
+      } else {
+        currentMonth++;
+      }
+      generateCalendar(currentYear, currentMonth);
+    });
+
+    generateCalendar(currentYear, currentMonth);
+
+    // 从 Excel 文件读取数据并显示在网页上
+    document.addEventListener('DOMContentLoaded', function () {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = '.xlsx';
+
+      // 监听文件选择
+      fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file && file.name.endsWith('.xlsx')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: 'binary' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+            
+            // 创建表格展示数据
+            const table = document.createElement('table');
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+
+            const headerRow = document.createElement('tr');
+            const headers = Object.keys(jsonData[0]);  // 获取第一行的键作为表头
+            headers.forEach(header => {
+              const th = document.createElement('th');
+              th.textContent = header;
+              th.style.border = '1px solid #ddd';
+              th.style.padding = '8px';
+              headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            jsonData.forEach(row => {
+              const tr = document.createElement('tr');
+              headers.forEach(header => {
+                const td = document.createElement('td');
+                td.textContent = row[header] || ''; // 填充数据
+                td.style.border = '1px solid #ddd';
+                td.style.padding = '8px';
+                tr.appendChild(td);
+              });
+              table.appendChild(tr);
+            });
+
+            // 将表格添加到页面
+            document.getElementById('excel-data').appendChild(table);
+          };
+          reader.readAsBinaryString(file);
+        }
+      });
+
+      document.body.appendChild(fileInput); // 将文件选择框添加到页面上
+    });
+  </script>
+
+  <footer>
+    <p>© 2024 我的第一个网站</p>
+  </footer>
 </body>
 </html>
