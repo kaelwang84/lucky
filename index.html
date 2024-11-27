@@ -1,49 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的第一个网站</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    /* 你可以在这里调整样式 */
-    #calendar {
-      width: 300px;
-      margin: 0 auto;
-      text-align: center;
-      font-family: Arial, sans-serif;
+    /* 样式重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    #calendar-header {
+    /* 全局布局 */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    /* 导航栏样式 */
+    nav {
+      background-color: #2c3e50;
+      color: white;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    #calendar-table {
-      width: 100%;
-      border-collapse: collapse;
+    nav ul {
+      list-style: none;
+      display: flex;
     }
 
-    #calendar-table th,
-    #calendar-table td {
-      padding: 10px;
-      text-align: center;
-      border: 1px solid #ddd;
+    nav ul li {
+      margin-right: 20px;
     }
 
-    #calendar-table th {
-      background-color: #f2f2f2;
+    nav ul li a {
+      text-decoration: none;
+      color: white;
+      font-size: 16px;
     }
 
-    .today {
-      background-color: #ffcc00;
-      font-weight: bold;
+    nav .search-bar input {
+      padding: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
 
-    table {
+    /* 页面内容区 */
+    .content {
+      padding: 20px;
+    }
+
+    /* 卡片样式 */
+    .card {
+      background-color: white;
+      padding: 20px;
       margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 日历样式 */
+    #calendar {
+      margin: 0 auto;
+      width: 80%;
+      text-align: center;
+    }
+
+    /* 表格样式 */
+    table {
       width: 100%;
+      margin-top: 20px;
       border-collapse: collapse;
     }
 
@@ -55,17 +87,93 @@
       padding: 10px;
       text-align: center;
     }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    /* 响应式布局 */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      nav ul {
+        flex-direction: column;
+        margin-top: 10px;
+      }
+
+      nav ul li {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+
+      #calendar {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Kael的碎碎念</h1>
-    <p>这是我的第一个网站。</p>
-  </header>
 
-  <div id="weather">
-    <h2>当前天气</h2>
-    <p id="weather-info">加载中...</p>
+  <!-- 导航栏 -->
+  <nav>
+    <div class="logo">
+      <h1>Kael的碎碎念</h1>
+    </div>
+    <ul>
+      <li><a href="#">主页</a></li>
+      <li><a href="#">备忘录</a></li>
+      <li><a href="#">链接1</a></li>
+      <li><a href="#">链接2</a></li>
+      <li><a href="#">链接3</a></li>
+    </ul>
+    <div class="search-bar">
+      <input type="text" placeholder="搜索...">
+    </div>
+  </nav>
+
+  <div class="content">
+    <!-- 页面主内容 -->
+    <div class="card">
+      <h2>当前天气</h2>
+      <p id="weather-info">加载中...</p>
+    </div>
+
+    <div class="card">
+      <h2>日历</h2>
+      <div id="calendar">
+        <h3 id="current-month"></h3>
+        <div id="calendar-header">
+          <button id="prev-month">上一月</button>
+          <span id="current-month">2024年11月</span>
+          <button id="next-month">下一月</button>
+        </div>
+        <table id="calendar-table">
+          <thead>
+            <tr>
+              <th>日</th>
+              <th>一</th>
+              <th>二</th>
+              <th>三</th>
+              <th>四</th>
+              <th>五</th>
+              <th>六</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 动态生成日期 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 从 Google Sheets 获取数据展示 -->
+    <div class="card" id="excel-data">
+      <h2>表格数据</h2>
+      <!-- 数据会从 Google Sheets API 获取并渲染到这里 -->
+    </div>
   </div>
 
   <script>
@@ -78,50 +186,19 @@
       .catch(error => {
         document.getElementById('weather-info').textContent = '获取天气数据失败';
       });
-  </script>
 
-  <div id="calendar">
-    <h2>日历</h2>
-    <div id="calendar-header">
-      <button id="prev-month">上一月</button>
-      <span id="current-month"></span>
-      <button id="next-month">下一月</button>
-    </div>
-    <table id="calendar-table">
-      <thead>
-        <tr>
-          <th>日</th>
-          <th>一</th>
-          <th>二</th>
-          <th>三</th>
-          <th>四</th>
-          <th>五</th>
-          <th>六</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 动态生成日期 -->
-      </tbody>
-    </table>
-  </div>
-
-  <div id="excel-data">
-    <!-- 从 Google Sheets 获取并显示的数据将在此处插入 -->
-  </div>
-
-  <script>
+    // Google Sheets API
     const sheetUrl = 'https://script.google.com/macros/s/AKfycbxeOWZsx6N9F1oLSTgb0Ft5JWAdG5gyNCXWxQfbWnMqZ1Gsg27jYnZMzTxD2fBGjeInug/exec';
 
-    // 用于创建和更新表格的函数
     function updateExcelData() {
       fetch(sheetUrl)
         .then(response => response.json())
         .then(data => {
-          // 清空现有的表格数据
           document.getElementById('excel-data').innerHTML = '';
           const table = document.createElement('table');
+          table.style.width = '100%';
+          table.style.borderCollapse = 'collapse';
 
-          // 添加表头
           const headerRow = document.createElement('tr');
           const headers = ['日期', '星期', '节假日', '倒数日', '办理事项1', '办理事项2', '办理事项3', '办理事项4', '办理事项5'];
           headers.forEach(header => {
@@ -133,12 +210,11 @@
           });
           table.appendChild(headerRow);
 
-          // 将数据填充到表格中
           data.forEach(row => {
             const tr = document.createElement('tr');
             Object.values(row).forEach(value => {
               const td = document.createElement('td');
-              td.textContent = value || ''; // 确保为空的单元格不会为空
+              td.textContent = value || ''; 
               td.style.border = '1px solid #ddd';
               td.style.padding = '8px';
               tr.appendChild(td);
@@ -146,7 +222,6 @@
             table.appendChild(tr);
           });
 
-          // 将表格添加到页面
           document.getElementById('excel-data').appendChild(table);
         })
         .catch(error => {
@@ -155,12 +230,10 @@
         });
     }
 
-    // 初始化时加载数据
-    updateExcelData();
+    updateExcelData(); // 初始化时加载数据
+    setInterval(updateExcelData, 300000);  // 每5分钟刷新一次数据
 
-    // 每5分钟刷新一次数据
-    setInterval(updateExcelData, 300000);  // 5分钟（300000ms）
-
+    // 日历生成函数
     const today = new Date();
     let currentYear = today.getFullYear();
     let currentMonth = today.getMonth();
@@ -235,7 +308,6 @@
     });
 
     generateCalendar(currentYear, currentMonth);
-
   </script>
 
   <footer>
