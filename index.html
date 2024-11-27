@@ -170,6 +170,66 @@
         <h2>关于我们</h2>
         <p>我们是一个小型团队，专注于提供简单的网页设计。</p>
     </section>
+<div id="memo">
+    <h2>备忘录</h2>
+    <textarea id="memo-text" placeholder="在这里输入你的备忘录..."></textarea>
+    <button id="save-memo">保存备忘录</button>
+    <p id="saved-memo"></p>
+</div>
+
+<script>
+  // 获取已保存的备忘录
+  const savedMemo = localStorage.getItem('memo');
+  if (savedMemo) {
+    document.getElementById('saved-memo').textContent = '已保存的备忘录：' + savedMemo;
+  }
+
+  // 保存备忘录
+  document.getElementById('save-memo').addEventListener('click', function() {
+    const memoText = document.getElementById('memo-text').value;
+    localStorage.setItem('memo', memoText);
+    document.getElementById('saved-memo').textContent = '已保存的备忘录：' + memoText;
+  });
+</script>
+<div id="expense-tracker">
+    <h2>记账</h2>
+    <input type="text" id="expense-description" placeholder="描述（如：午餐）">
+    <input type="number" id="expense-amount" placeholder="金额">
+    <button id="save-expense">保存支出</button>
+    <ul id="expense-list"></ul>
+</div>
+
+<script>
+  // 从本地存储获取已保存的支出记录
+  const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+  const expenseList = document.getElementById('expense-list');
+  expenses.forEach(expense => {
+    const li = document.createElement('li');
+    li.textContent = `${expense.description}: ¥${expense.amount}`;
+    expenseList.appendChild(li);
+  });
+
+  // 保存支出记录
+  document.getElementById('save-expense').addEventListener('click', function() {
+    const description = document.getElementById('expense-description').value;
+    const amount = document.getElementById('expense-amount').value;
+    
+    if (description && amount) {
+      const expense = { description, amount };
+      expenses.push(expense);
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+
+      // 更新支出列表
+      const li = document.createElement('li');
+      li.textContent = `${description}: ¥${amount}`;
+      expenseList.appendChild(li);
+
+      // 清空输入框
+      document.getElementById('expense-description').value = '';
+      document.getElementById('expense-amount').value = '';
+    }
+  });
+</script>
 
     <footer>
         <p>© 2024 我的第一个网站</p>
