@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的第一个网站</title>
-  <link rel="stylesheet" href="styles.css">
   <style>
+    /* 你可以在这里调整样式 */
     #calendar {
       width: 300px;
       margin: 0 auto;
@@ -58,6 +58,11 @@
   </style>
 </head>
 <body>
+  <header>
+    <h1>Kael的碎碎念</h1>
+    <p>这是我的第一个网站。</p>
+  </header>
+
   <div id="weather">
     <h2>当前天气</h2>
     <p id="weather-info">加载中...</p>
@@ -74,11 +79,6 @@
         document.getElementById('weather-info').textContent = '获取天气数据失败';
       });
   </script>
-
-  <header>
-    <h1>Kael的碎碎念</h1>
-    <p>这是我的第一个网站。</p>
-  </header>
 
   <div id="calendar">
     <h2>日历</h2>
@@ -105,9 +105,62 @@
     </table>
   </div>
 
-  <div id="excel-data"></div>
+  <div id="excel-data">
+    <!-- 从 Google Sheets 获取并显示的数据将在此处插入 -->
+  </div>
 
   <script>
+    const sheetUrl = 'https://script.google.com/macros/s/AKfycbxeOWZsx6N9F1oLSTgb0Ft5JWAdG5gyNCXWxQfbWnMqZ1Gsg27jYnZMzTxD2fBGjeInug/exec';
+
+    // 用于创建和更新表格的函数
+    function updateExcelData() {
+      fetch(sheetUrl)
+        .then(response => response.json())
+        .then(data => {
+          // 清空现有的表格数据
+          document.getElementById('excel-data').innerHTML = '';
+          const table = document.createElement('table');
+
+          // 添加表头
+          const headerRow = document.createElement('tr');
+          const headers = ['日期', '星期', '节假日', '倒数日', '办理事项1', '办理事项2', '办理事项3', '办理事项4', '办理事项5'];
+          headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            th.style.border = '1px solid #ddd';
+            th.style.padding = '8px';
+            headerRow.appendChild(th);
+          });
+          table.appendChild(headerRow);
+
+          // 将数据填充到表格中
+          data.forEach(row => {
+            const tr = document.createElement('tr');
+            Object.values(row).forEach(value => {
+              const td = document.createElement('td');
+              td.textContent = value || ''; // 确保为空的单元格不会为空
+              td.style.border = '1px solid #ddd';
+              td.style.padding = '8px';
+              tr.appendChild(td);
+            });
+            table.appendChild(tr);
+          });
+
+          // 将表格添加到页面
+          document.getElementById('excel-data').appendChild(table);
+        })
+        .catch(error => {
+          console.error('获取数据失败:', error);
+          document.getElementById('excel-data').textContent = '无法获取表格数据。';
+        });
+    }
+
+    // 初始化时加载数据
+    updateExcelData();
+
+    // 每5分钟刷新一次数据
+    setInterval(updateExcelData, 300000);  // 5分钟（300000ms）
+
     const today = new Date();
     let currentYear = today.getFullYear();
     let currentMonth = today.getMonth();
@@ -183,100 +236,7 @@
 
     generateCalendar(currentYear, currentMonth);
 
-    // 从 Excel 文件读取数据并显示在网页上
-    document.addEventListener('DOMContentLoaded', function () {
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = '.xlsx';
-
-      // 监听文件选择
-      fileInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file && file.name.endsWith('.xlsx')) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const data = e.target.result;
-            const workbook = XLSX.read(data, { type: 'binary' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-            
-            // 创建表格展示数据
-            const table = document.createElement('table');
-            table.style.width = '100%';
-            table.style.borderCollapse = 'collapse';
-
-            const headerRow = document.createElement('tr');
-            const headers = Object.keys(jsonData[0]);  // 获取第一行的键作为表头
-            headers.forEach(header => {
-              const th = document.createElement('th');
-              th.textContent = header;
-              th.style.border = '1px solid #ddd';
-              th.style.padding = '8px';
-              headerRow.appendChild(th);
-            });
-            table.appendChild(headerRow);
-
-            jsonData.forEach(row => {
-              const tr = document.createElement('tr');
-              headers.forEach(header => {
-                const td = document.createElement('td');
-                td.textContent = row[header] || ''; // 填充数据
-                td.style.border = '1px solid #ddd';
-                td.style.padding = '8px';
-                tr.appendChild(td);
-              });
-              table.appendChild(tr);
-            });
-
-            // 将表格添加到页面
-            document.getElementById('excel-data').appendChild(table);
-          };
-          reader.readAsBinaryString(file);
-        }
-      });
-
-      document.body.appendChild(fileInput); // 将文件选择框添加到页面上
-    });
   </script>
-<script>
-  fetch('https://script.google.com/macros/s/AKfycbxeOWZsx6N9F1oLSTgb0Ft5JWAdG5gyNCXWxQfbWnMqZ1Gsg27jYnZMzTxD2fBGjeInug/exec')
-    .then(response => response.json())
-    .then(data => {
-      const table = document.createElement('table');
-      table.style.width = '100%';
-      table.style.borderCollapse = 'collapse';
-      
-      const headerRow = document.createElement('tr');
-      // 假设你知道字段的名称
-      const headers = ['日期', '星期', '节假日', '倒数日', '办理事项1', '办理事项2', '办理事项3', '办理事项4', '办理事项5'];
-      headers.forEach(header => {
-        const th = document.createElement('th');
-        th.textContent = header;
-        th.style.border = '1px solid #ddd';
-        th.style.padding = '8px';
-        headerRow.appendChild(th);
-      });
-      table.appendChild(headerRow);
-
-      data.forEach(row => {
-        const tr = document.createElement('tr');
-        Object.values(row).forEach(value => {
-          const td = document.createElement('td');
-          td.textContent = value;
-          td.style.border = '1px solid #ddd';
-          td.style.padding = '8px';
-          tr.appendChild(td);
-        });
-        table.appendChild(tr);
-      });
-
-      document.getElementById('excel-data').appendChild(table);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-</script>
 
   <footer>
     <p>© 2024 我的第一个网站</p>
